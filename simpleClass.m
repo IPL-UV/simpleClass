@@ -194,37 +194,6 @@ set(gca,'YTickLabel',METHODS);
 xlabel('CPU Time log([s])')
 grid
 
-% OA vs #predictions
-Ypred = [Ypred_LDA(nozero),Ypred_QDA(nozero),Ypred_MAHALANOBIS(nozero),Ypred_KNN(nozero),Ypred_TREE(nozero),Ypred_BAG(nozero),Ypred_BOOST(nozero),Ypred_RF(nozero),Ypred_NN(nozero),Ypred_SVM(nozero)];
-Ytest = YYtotal(nozero);
-[ntest do] = size(Ytest);
-REALIZ = 20;
-trythis = 1:50:ntest;
-OAvsNumPredictions = zeros(REALIZ,length(trythis),size(Ypred,2));
-for realiza=1:REALIZ
-    r=randperm(ntest);
-    k=0;
-    for i=trythis
-        k=k+1;
-        for m=1:size(Ypred,2)
-            OAvsNumPredictions(realiza,k,m) = length( find( Ytest(r(1:i))==Ypred(r(1:i),m)))/length(Ytest(r(1:i)));
-        end
-    end
-end
-
-M =  squeeze(mean(OAvsNumPredictions,1));
-S =  1.96/sqrt(REALIZ)*squeeze(std(OAvsNumPredictions,1));
-
-figure,
-% myeb(M,S);
-% errorbar(trythis,M,S)
-semilogx(trythis,M)
-xlabel('# Predictions')
-ylabel('Accuracy [%]')
-grid
-axis tight
-legend(METHODS)
-
 % Sizes
 [r c b] = size(Xtotal);
 
@@ -247,5 +216,5 @@ figure,imagesc(reshape(Ypred_NN,r,c)), axis off square, title(['NN, Kappa=' num2
 figure,imagesc(reshape(Ypred_SVM,r,c)), axis off square, title(['SVM, Kappa=' num2str(KAPPA_SVM)])
 
 % % Sort figures in the screen
-% tile
+tile
 
