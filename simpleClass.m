@@ -177,8 +177,6 @@ RES_GPC = assessment(YYtotal(nozero),Ypred_GPC(nozero),'class');
 OAS_GPC    = RES_GPC.OA;
 KAPPA_GPC = RES_GPC.Kappa
 
-
-break
 %----------------------------------------------------------------------
 % 5) Results
 %----------------------------------------------------------------------
