@@ -67,8 +67,8 @@ clc
 nozero = find(YYtotal~=0);
 
 % Methods to be compared
-METHODS = {'LDA' 'QDA' 'MAHAL' 'KNN' 'TREE' 'BAG' 'BOOST' 'RF' 'NN' 'SVM' 'GPC'}
-% METHODS = {'LDA', 'SVM', 'GPC'}
+% METHODS = {'LDA' 'QDA' 'MAHAL' 'KNN' 'TREE' 'BAG' 'BOOST' 'RF' 'NN' 'SVM' 'GPC'}
+METHODS = {'LDA', 'SVM', 'GPC'}
 
 MM=0;
 

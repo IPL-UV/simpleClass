@@ -4,6 +4,14 @@ function [Ypredtest probs mu s2] = classifyGPC(Xtest,Xtrain,Ytrain)
 
 numClasses = numel(unique(Ytrain));
 [ntrain,d] = size(Xtrain);
+[ntest,d] = size(Xtest);
+% faster test: Predict in batches for large test matrices
+if ntest<1000
+    folds=1;
+else
+    folds = round(ntest/1000); % number of approximate folds for testing (a fold will contain roughly 1000 samples)
+end
+indices = crossvalind('Kfold',1:ntest,folds); % generate random indices to sample folds
 
 % A classifier per class
 for c=1:numClasses
@@ -16,12 +24,18 @@ for c=1:numClasses
     SignalPower  = mean(var(y));
     NoisePower   = SignalPower/4;
     loghyper     = [lengthscales; 0.5*log(SignalPower); 0.5*log(NoisePower)];
-
+    
     % optimize model
     [loghyper logmarglik] = minimize(loghyper, 'binaryLaplaceGP', -100, K, 'cumGauss', Xtrain, y);
-    [probs(:,c) mu(:,c) s2(:,c)] = binaryLaplaceGP(loghyper, K, 'cumGauss', Xtrain, y, Xtest);
+    
+    % test
+%     [probs(:,c) mu(:,c) s2(:,c)] = binaryLaplaceGP(loghyper, K, 'cumGauss', Xtrain, y, Xtest);
+          
+    for f=1:folds
+        test = find(indices==f);  % select samples belonging to fold "f"
+        [probs(test,c) mu(test,c) s2(test,c)] = binaryLaplaceGP(loghyper, K, 'cumGauss', Xtrain, y, Xtest(test,:));
+    end
     
 end
 
 [val Ypredtest] = max(probs,[],2)
-
