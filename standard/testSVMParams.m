@@ -23,15 +23,23 @@ function [ifreepar,error,params] = testSVMParams(xt,yt,params)
 % Outputs:
 %    ifreepar:      index of best free parameter found.
 %    error:         Kappa (SVC) or RMSE (SVR) of the best parameter.
-%    params.groups: vfold groups.
-%    params.ct,cv:  train and test sets according percent.
+%    params.groups:      vfold groups.
+%    params.ct,cv:       train and test sets according percent.
+%    params.useParallel: use matlabpool in for vfold training.
+% 
 %
 % (c) jordi@uv.es, 2007-08
+%     2016: adapted for simpleClass toolbox
+%           added useParallel flag
 
 if params.svm_type < 3
     assespar = 'class';
 else
     assespar = 'regress';
+end
+
+if ~isfield(params,'useParallel')
+    params.useParallel = false;
 end
 
 verb = params.verb;
@@ -96,17 +104,24 @@ if params.knl_type == 4 && ~par_is_sigma
     kt = kernelmatrix('rbf',xt',xt',params.sigma(1));
 end
 
+% Open MATLAB pool
+if params.useParallel && matlabpool('size') == 0,
+    matlabpool
+end
+
 for i = 1:length(freepar)
     
     %if verb, fprintf('  %10.2f ... ', param(i)), end
     
     libpar = sprintf(libsvm, freepar(i));
-    if par_is_sigma
+    if par_is_sigma && params.knl_type == 4
         % Calculate kernel matrix
         kt = kernelmatrix('rbf', xt', xt', freepar(i));
+    else
+        kt = []; % empty decl. needed for parfor
     end
     if params.vfold
-        for f = 1:params.vfold,
+        parfor f = 1:params.vfold,
             in  = find(params.groups ~= f);
             out = find(params.groups == f);
             if params.svm_type == 2
@@ -121,9 +136,9 @@ for i = 1:length(freepar)
                 yp = svmpredict(yt(out),xt(out,:), model);
             end
             %if verb, plot(1:length(yp),yp,1:length(out),yt(out,:)), axis('tight'), shg, end
-            s = warning('off','MATLAB:divideByZero');
+            %s = warning('off','MATLAB:divideByZero');
             assess = assessment(yt(out,:),yp,assespar);
-            warning(s);
+            %warning(s);
             if params.svm_type < 3
                 error(f,i) = assess.Kappa;
             else
@@ -146,9 +161,9 @@ for i = 1:length(freepar)
             yp = svmpredict(yt(params.cv,:), xt(params.cv,:), model);
         end
         %if verb, plot(1:length(yp),yp,1:length(cv),yt(cv,:)), axis('tight'), shg, end
-        s = warning('off','MATLAB:divideByZero');
+        %s = warning('off','MATLAB:divideByZero');
         assess = assessment(yt(params.cv,:),yp,assespar);
-        warning(s);
+        %warning(s);
         if params.svm_type < 3
             error(i) = assess.Kappa;
         else
@@ -157,6 +172,11 @@ for i = 1:length(freepar)
         %if verb, fprintf('    SV: %d, K/R: %f\n', model.totalSV, error(i)), end
     end
 end
+
+% TODO: should we close the pool?
+% if params.useParallel && matlabpool('size') > 0,
+%     matlabpool('close')
+% end
 
 if params.svm_type < 3 % SVC
     if params.vfold
