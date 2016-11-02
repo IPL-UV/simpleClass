@@ -61,7 +61,7 @@ if params.svm_type == 3 || params.svm_type == 4 % SVR
         params.e = 0.01:0.01:0.1; %[0.01 0.1:0.1:0.5];
         ie = 2; % Para e, selecciona 0.1
     else
-        [esel ie]= min(abs(params.e-0.1)); % o lo mas cercano a 0.1
+        [~,ie]= min(abs(params.e-0.1)); % o lo mas cercano a 0.1
     end
 else
     params.e  = 0.1; % SVC does not use epsilon, fix its value
@@ -73,8 +73,8 @@ C  = params.C;
 e  = params.e;
 
 % Selecciona lo mas proximo a C=10 y g=1
-[v,ic] = min(abs(C-10));
-[v,is] = min(abs(sigma-1));
+[~,ic] = min(abs(C-10));
+[~,is] = min(abs(sigma-1));
 
 % Pure OC
 if params.pureoc
@@ -108,9 +108,9 @@ for vuelta = 1:vueltas
     params.sigma = sigma;
     params.C = C(ic);
     params.e = e(ie);
-    [new_is,error,params] = TestParam(xt,yt,params);
+    [new_is,~,params] = testSVMParams(xt,yt,params);
     
-    if vuelta>1 && is==new_is
+    if vuelta > 1 && is == new_is
         if verb, fprintf('  Same sigma found, skipping C and eps\n'), end
         break
     end
@@ -121,14 +121,14 @@ for vuelta = 1:vueltas
     if verb, fprintf('  C ...\n'), end
     params.sigma = sigma(is);
     params.C = C;
-    [ic,error,params] = TestParam(xt,yt,params);
+    [ic,~,params] = testSVMParams(xt,yt,params);
 
     % Epsilon is for SVR only
     if params.svm_type == 3 || params.svm_type == 4
         if verb, fprintf('  Eps ...\n'), end
         params.C = C(ic);
         params.e = e;
-        [ie,error,params] = TestParam(xt,yt,params);
+        [ie,~,params] = testSVMParams(xt,yt,params);
     end
 end
 
@@ -165,9 +165,9 @@ else
     model = svmtrain(yt(ct),xt(ct,:),libpar);
     yp = svmpredict(yt,xt,model);
 end
-s = warning('off','MATLAB:divideByZero');
+% s = warning('off','MATLAB:divideByZero');
 error = assessment(yt,yp,assespar);
-warning(s);
+% warning(s);
 if verb
     if params.svm_type < 3
         fprintf('  Kappa: %f', error.Kappa)
