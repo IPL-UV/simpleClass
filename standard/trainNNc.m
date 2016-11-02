@@ -36,6 +36,7 @@ method = 'trainbr'; % Levenberg-Marquardt with Bayesian regularization
 % method = 'trainscg'; % Scaled conjugate gradient backpropagation (default at least since R2011b)
 
 net = cell(length(nhs),nns);
+tr = cell(length(nhs),nns);
 res = zeros(length(nhs),nns);
 
 for nh = nhs
@@ -60,7 +61,7 @@ for nh = nhs
         %[net,tr,OUTPUTS,ERRORS,Pf,Af] = train(net, Xtrain', Ytrain_nn', [], [], VV, []);
         
         % Train using the whole set and the provided train/validation/test sets
-        [net{i,nn},tr{i,nn}] = train(net{i,nn}, X', Y_nn);
+        [net{i,nn},tr{i,nn}] = train(net{i,nn}, X', Y_nn, 'useParallel', 'yes');
         
         if any(tr{i,nn}.testInd ~= testInd)
             error('Some test index changed')

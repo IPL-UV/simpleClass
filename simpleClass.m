@@ -8,6 +8,7 @@ set(0,'DefaultAxesFontName',fontname,'DefaultAxesFontSize',fontsize,'DefaultAxes
     'DefaultLineLineWidth',3,'DefaultLineMarkerSize',10,'DefaultLineColor',[0 0 0]);
 
 % warning off
+rng('default')
 rng(1234)
 
 format bank
@@ -109,7 +110,7 @@ nozero = find(YYtotal ~= 0);
 
 % Methods to be compared
 % METHODS = {'LDA' 'QDA' 'MAHAL' 'KNN' 'TREE' 'BAG' 'BOOST' 'RF' 'NN' 'SVM' 'GPC'}
-METHODS = {'LDA','NN'} %,'SVM'} %,'KNN'};%'NN','SVM','GPC'}
+METHODS = {'LDA','SVM'} %'NN'} %,'SVM'} %,'KNN'};%'NN','SVM','GPC'}
 
 MM = 0;
 
@@ -170,9 +171,9 @@ if sum(strcmpi(METHODS,'TREE'))
     MM = MM + 1;
     fprintf('Training Trees ... \n')
     t = cputime;
-    model = treefit(Xtrain,Ytrain,'method','classification');
+    model = classregtree(Xtrain,Ytrain,'method','classification');
     time(MM) = cputime - t;
-    Ypred = treeval(model, XXtotal);
+    Ypred = eval(model, XXtotal);
     Yp(:,MM) = Ypred;
     RES = assessment(YYtotal(nozero), Ypred(nozero), 'class');
     OAS(MM) = RES.OA;
@@ -229,7 +230,7 @@ if sum(strcmpi(METHODS,'NN'))
     MM = MM + 1;
     disp('Training NNs ...')
     t = cputime;
-    model = trainNN(Xtrain,Ytrain);
+    model = trainNNc(Xtrain,Ytrain);
     time(MM) = cputime - t;
     Ypred = testNN(model,XXtotal);
     Yp(:,MM) = Ypred;
@@ -243,8 +244,9 @@ if sum(strcmpi(METHODS,'SVM'))
     MM = MM + 1;
     disp('Training SVM ...')
     t = cputime;
-    Ypred = classifySVM(XXtotal,Xtrain,Ytrain);
-    Yp(:,MM) = Ypred;
+    %Ypred = classifySVM(XXtotal,Xtrain,Ytrain);
+    model = trainSVMc(Ytrain, Xtrain, struct('svm_type', 0, 'knl_type', 2, 'vfold', 3));
+    Yp(:,MM) = svmpredict(XXtotal, YYtotal, model);
     time(MM) = cputime - t;
     RES = assessment(YYtotal(nozero),Ypred(nozero), 'class');
     OAS(MM) = RES.OA;
