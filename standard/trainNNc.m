@@ -1,4 +1,4 @@
-function [model,tr] = trainNN(X,Y)
+function [model,tr] = trainNNc(X,Y)
 
 % Split in training and validation
 n = size(X,1);

@@ -246,7 +246,8 @@ if sum(strcmpi(METHODS,'SVM'))
     t = cputime;
     %Ypred = classifySVM(XXtotal,Xtrain,Ytrain);
     model = trainSVMc(Ytrain, Xtrain, struct('svm_type', 0, 'knl_type', 2, 'vfold', 3));
-    Yp(:,MM) = svmpredict(XXtotal, YYtotal, model);
+    Ypred = svmpredict(YYtotal, XXtotal, model);
+    Yp(:,MM) = Ypred;
     time(MM) = cputime - t;
     RES = assessment(YYtotal(nozero),Ypred(nozero), 'class');
     OAS(MM) = RES.OA;

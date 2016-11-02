@@ -1,6 +1,6 @@
-function [yp,model,error,is,ic,ie,groups] = trainSVMc(yt,xt,params)
+function [model,error,yp,is,ic,ie,groups] = trainSVMc(yt,xt,params)
 
-% function [yp,model,error,is,ic,ie,groups] = trainSVMc(yt,xt,params)
+% function [model,error,yp,is,ic,ie,groups] = trainSVMc(yt,xt,params)
 %
 % Inputs:
 %   Y:          labels.
@@ -19,9 +19,9 @@ function [yp,model,error,is,ic,ie,groups] = trainSVMc(yt,xt,params)
 %     e:        optional: vector of epsilon values to test (for SVR), default e = [0.01:0.01:0.1];
 %
 % Outputs:
-%   yp:         classification / value.
 %   model:      obtained model.
 %   error:      output of assessment.
+%   yp:         classification / value.
 %   is,ic,ie:   indexes of best free parameters found.
 %   groups:     vfold calculated groups
 %
