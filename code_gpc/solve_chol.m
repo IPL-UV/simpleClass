@@ -12,13 +12,13 @@
 %
 % Copyright (c) 2004, 2005, 2006 by Carl Edward Rasmussen. 2006-02-08.
 
-function x = solve_chol(A, B);
+function x = solve_chol(A, B)
 
-if nargin ~= 2 | nargout > 1
+if nargin ~= 2 || nargout > 1
   error('Wrong number of arguments.');
 end
 
-if size(A,1) ~= size(A,2) | size(A,1) ~= size(B,1)
+if size(A,1) ~= size(A,2) || size(A,1) ~= size(B,1)
   error('Wrong sizes of matrix arguments.');
 end
 

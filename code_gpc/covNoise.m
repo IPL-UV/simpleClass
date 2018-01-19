@@ -1,4 +1,4 @@
-function [A, B] = covNoise(logtheta, x, z);
+function [A, B] = covNoise(logtheta, x, z)
 
 % Independent covariance function, ie "white noise", with specified variance.
 % The covariance function is specified as:

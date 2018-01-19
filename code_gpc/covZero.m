@@ -1,11 +1,10 @@
-function [A, B] = covZero(dummy, x, z);
+function [A, B] = covZero(dummy, x, z)
 
 % covariance function for a constant function. The covariance function is
 % parameterized as:
 %
 % k(x^p,x^q) = 0
 %
-
 
 if nargin == 0, A = '0'; return; end              % report number of parameters
 

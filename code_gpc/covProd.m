@@ -1,4 +1,4 @@
-function [A, B] = covProdGus(covfunc, logtheta, x, z);
+function [A, B] = covProdGus(covfunc, logtheta, x, z)
 
 % covProdGus - compose a covariance function as the tensor product of other covariance
 % functions. This function doesn't actually compute very much on its own, it

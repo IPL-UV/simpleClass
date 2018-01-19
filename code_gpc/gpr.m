@@ -1,4 +1,4 @@
-function [out1, out2] = gpr(logtheta, covfunc, x, y, xstar);
+function [out1, out2] = gpr(logtheta, covfunc, x, y, xstar)
 
 % gpr - Gaussian process regression, with a named covariance function. Two
 % modes are possible: training and prediction: if no test data are given, the
@@ -62,6 +62,6 @@ else                    % ... otherwise compute (marginal) test predictions ...
   if nargout == 2
     v = L\Kstar;
     out2 = Kss - sum(v.*v)';
-  end  
+  end
 
 end

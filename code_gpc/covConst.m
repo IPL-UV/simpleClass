@@ -1,4 +1,4 @@
-function [A, B] = covConst(logtheta, x, z);
+function [A, B] = covConst(logtheta, x, z)
 
 % covariance function for a constant function. The covariance function is
 % parameterized as:
